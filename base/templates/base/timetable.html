@@ -1,0 +1,222 @@
+<!-- timetable.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+
+        *{
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+  
+  }
+  
+  html{
+      scroll-behavior: smooth;
+  }
+  
+  a{
+      text-decoration:none;
+  }
+  
+  h1, h2, h3, h4, h5{
+      text-align: center;
+      font-family: times new roman;
+  }
+  
+  button
+  {
+      border-style:none;
+  }
+  .main
+  {
+      max-width: 1200px;
+      height: auto;
+      margin:0 auto;
+  }
+  
+  form {
+      margin-top: 3%;
+      margin-left: 18%;
+      margin-right: 12%;
+  }
+  
+  form fieldset{
+      padding: 50px;
+      border-width: 25px;
+      border-style: ridge;
+      border-color: #257a7a;
+      box-shadow: 6px 13px 13px 0px black;
+      background-color: #fff;
+  
+  }
+  
+  .secHead{
+      margin-top: 20px;
+      margin-bottom: 20px;
+      margin-left: 120px;
+      color:#3e4242;
+      font-size: 1.8rem;
+  }
+  
+  .table2{
+      margin-bottom: 100px;
+      margin-left: auto;
+      margin-right: auto;
+  }
+  
+  .table2 {
+  
+    border: 25px ridge;
+    border-color: #5a5a5a;
+    box-shadow: 6px 13px 13px 0px black;
+    background-color: #fff;
+    letter-spacing: 1px;
+    font-size: 1.0rem;
+  }
+  
+  .table2 td, th {
+    border: 1px solid rgb(190,190,190);
+    padding: 10px 20px;
+  
+  }
+  
+  .table2 th{
+      color: #5a5a5a;
+      font-weight: bolder;
+  }
+  
+  .table2 td {
+    text-align: center;
+  }
+  
+  .table1{
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    overflow: hidden;
+  }
+  
+  .table1 td, th{
+      border-top: 1px solid #5a5a5a;
+      padding: 10px;
+    }
+  
+  
+  .table1 th{
+      background-color: #5a5a5a;
+      color: #fff;
+    }
+  
+  .submit{
+      margin-left: auto;
+      color: #fff;
+      background-color: #5a5a5a;
+      border-radius: 3px;
+      padding: 13px 39px;
+      text-align: center;
+      letter-spacing: 0.9px;
+      text-decoration: none;
+      margin-right: auto;
+      line-height: 26px;
+      font-size: 16px;
+      text-align: center;
+  }
+      </style>
+  
+  </head>
+  <body>
+  <script type="text/javascript">
+          var checkList = document.getElementById('list1');
+          var items = document.getElementById('items');
+          checkList.getElementsByClassName('anchor')[0].onclick = function (evt) {
+              if (items.classList.contains('visible')){
+                  items.classList.remove('visible');
+                  items.style.display = "none";
+              }
+  
+              else{
+                  items.classList.add('visible');
+                  items.style.display = "block";
+              }
+          }
+  
+          items.onblur = function(evt) {
+              items.classList.remove('visible');
+          }
+  
+      </script>
+          <br><br>
+          <div id="timetable">
+          <h1>Generated Timetable</h1><br>
+          {% block content %}
+          {% load static %}
+          {% for course in courses %}
+  <h2 class="secHead">{{ course.id }} ({{ course.department }})</h2>
+      <table class="table2">
+        <colgroup>
+          <col>
+          <col>
+          <col>
+          <col>
+          <col>
+          <col>
+        </colgroup>
+        <tr>
+          <th>Department #</th>
+          <th>Coursecode</th>
+          <th>Lecture room</th>
+          <th>Lecturer</th>
+          <th>Time</th>
+        </tr>
+        {% for class in schedule %}
+          {% if class.course == course.id %}
+        <tr>
+            <td>{{ course.coursecode }}</td>
+            <td>{{ course.day }}</td>
+            <td>{{ course.time }}</td>
+            <td>{{ course.level }}</td>
+            <td>{{ course.lectureroom }}</td>
+        </tr>
+          {% endif %}
+        {% endfor %}
+      </table>
+  
+  {% endfor %}
+  {% endblock %}
+  
+          </div>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button class="submit" id="download">Download</button>
+  </body>
+  </html>
+
+<!--{% for department, coursecodes in timetable.items %} -->
+    <h2>{{ department }}</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Coursecode</th>
+                <th>Day</th>
+                <th>Time</th>
+                <th>Lecture room</th>
+                <th>Level</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for course in courses %}
+            <tr>
+                <td>{{ course.coursecode }}</td>
+                <td>{{ course.day }}</td>
+                <td>{{ course.time }}</td>
+                <td>{{ course.level }}</td>
+                <td>{{ course.lectureroom }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endfor %}
+

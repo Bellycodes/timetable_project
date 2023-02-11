@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    </head>
+
+    <body>
+        {% extends 'main.html' %}
+
+        {% block content %}
+
+       <style>
+        .homepage{
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+        }
+       </style>
+
+        <div class="homepage">
+
+            <div>
+               {% include 'base/departments.html' %}
+            </div>
+
+            <div>
+                <h5>{{course_count}} courses available</h5>
+                <a href="{% url 'add-course' %}">Add Course</a>
+
+                {% include 'base/home-content.html' %}
+
+           
+            </div>
+        </div>
+
+        {% endblock content %}
+
+    </body>
+</html>

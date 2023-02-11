@@ -1,0 +1,16 @@
+<div>
+    {% for course in courses %}
+     <div>
+        {% if request.user == course.lecturer %}
+        <a href="{% url 'edit-course' course.id %}">Edit</a>
+        <a href="{% url 'delete-course' course.id %}">Delete</a>
+        {% endif %}
+        <span>@{{course.lecturer.username}}</span>
+         <h5>{{course.id}} -- <a href="{% url 'course' course.id %}">{{course.coursecode}}</a></h5>
+         <small>{{course.title}}</small>
+         <hr>
+     </div>
+
+    {% endfor %}
+
+</div>

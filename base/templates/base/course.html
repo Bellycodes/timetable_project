@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        
+    </head>
+
+    <style>
+        .course-content{
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+        }
+    </style>
+
+    <body>
+        {% extends 'main.html' %}
+
+        {% block content %}
+
+        <div class="course-content">
+
+            <div>
+                <h1> Course code: {{course.coursecode}}</h1>
+
+                <p>Course Title: {{course.title}}</p>
+        
+                <p> Lecturer: {{course.courselecturer}}</p>
+        
+                <p> Department: {{course.department}}</p>
+        
+                <p> School: {{course.school}}</p>
+        
+                <p> Level: {{course.level}}</p>
+           
+                {% if request.user == course.lecturer %}
+                <a href="{% url 'edit-course' course.id %}">Edit</a>
+                <a href="{% url 'delete-course' course.id %}">Delete</a>
+                {% endif %}
+                        
+            </div>
+        </div>
+                 
+
+        {% endblock %}
+    </body>
+</html>
