@@ -135,7 +135,7 @@ NUMB_OF_ELITE_SCHEDULES = 1
 TOURNAMENT_SELECTION_SIZE = 3
 MUTATION_RATE = 0.05
 
-class Data:
+class data:
     def __init__(self):
         self.lectureroom = Lectureroom.objects.all()
         self.time = Time.objects.all()
@@ -156,7 +156,7 @@ class Data:
 
 class Schedule:
     def __init__(self):
-        self._data = Data
+        self._data = data
         self._classes = []
         self._numberOfConflicts = 0
         self._fitness = -1
@@ -284,8 +284,8 @@ class GeneticAlgorithm:
         return tournament_pop
 
 class Class:
-    def __init__(self, id, dept, coursecode):
-        self.id = id # this line
+    def __init__(self, id, dept, Course, coursecode):
+        self.Course.id = id
         self.department = dept
         self.coursecode = coursecode
         self.courselecturer = None
@@ -293,7 +293,7 @@ class Class:
         self.lectureroom = None
         self.course = Course 
 
-    def get_id(self): return self.id
+    def get_id(self): return self.course.id
 
     def get_dept(self): return self.department
 
@@ -312,7 +312,7 @@ class Class:
     def set_lectureroom(self, lectureroom): self.lectureroom = lectureroom
 
 
-data = Data()
+data = data()
 
 
 def context_manager(schedule):

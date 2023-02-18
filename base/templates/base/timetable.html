@@ -1,14 +1,38 @@
 <!-- timetable.html -->
-<!DOCTYPE html>
+{% load static %}
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Generate Timetable</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+	<script src="https://use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+    <link rel="canonical" href="https://getbootstrap.com/docs/4.5/examples/carousel/">
+    <script src="render.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.js"></script>
+    <script type="text/javascript" language="JavaScript">
+    window.onload = function () {
+    document.getElementById("download")
+        .addEventListener("click", () => {
+            const invoice = this.document.getElementById("timetable");
+            console.log(invoice);
+            console.log(window);
+            var opt = {
+                margin: 1,
+                filename: 'Timetable.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'landscape' }
+            };
+            html2pdf().from(invoice).set(opt).save();
+        })
+}</script>
     <style>
 
-        *{
+ *{
       margin: 0;
       padding: 0;
       box-sizing: border-box;
@@ -156,7 +180,7 @@
           {% block content %}
           {% load static %}
           {% for course in courses %}
-  <h2 class="secHead">{{ course.id }} ({{ course.department }})</h2>
+  <h2 class="secHead">{{ course.department }}</h2>
       <table class="table2">
         <colgroup>
           <col>
@@ -167,20 +191,22 @@
           <col>
         </colgroup>
         <tr>
-          <th>Department #</th>
           <th>Coursecode</th>
           <th>Lecture room</th>
           <th>Lecturer</th>
+          <th>Day</th>
           <th>Time</th>
+          <th>Level</th>
         </tr>
         {% for class in schedule %}
           {% if class.course == course.id %}
         <tr>
             <td>{{ course.coursecode }}</td>
+            <td>{{ course.lectureroom }}</td>
+            <td>{{ course.courselecturer }}</td>
             <td>{{ course.day }}</td>
             <td>{{ course.time }}</td>
             <td>{{ course.level }}</td>
-            <td>{{ course.lectureroom }}</td>
         </tr>
           {% endif %}
         {% endfor %}
@@ -193,30 +219,4 @@
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button class="submit" id="download">Download</button>
   </body>
   </html>
-
-<!--{% for department, coursecodes in timetable.items %} -->
-    <h2>{{ department }}</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Coursecode</th>
-                <th>Day</th>
-                <th>Time</th>
-                <th>Lecture room</th>
-                <th>Level</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for course in courses %}
-            <tr>
-                <td>{{ course.coursecode }}</td>
-                <td>{{ course.day }}</td>
-                <td>{{ course.time }}</td>
-                <td>{{ course.level }}</td>
-                <td>{{ course.lectureroom }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-{% endfor %}
 
