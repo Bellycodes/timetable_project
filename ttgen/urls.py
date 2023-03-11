@@ -2,42 +2,39 @@ from django.contrib import admin
 from django.urls import path
 from . import views
 
+app_name = 'ttgen'
+
 urlpatterns = [
-    path('', views.index, name='index'),
-    path('about', views.about, name='about'),
-    path('help', views.help, name='help'),
-    path('terms', views.terms, name='terms'),
-    path('contact', views.contact, name='contact'),
 
-    path('admin_dashboard', views.admindash, name='admindash'),
+    path('dashboard/', views.DashboardView.as_view(), name='dashboard'),
 
-    path('add_lecturer', views.addLecturer, name='add_lecturer'),
-    path('lecturers_list/', views.inst_list_view , name='edit_lecturer'),
-    path('delete_lecturer/<int:pk>/', views.delete_lecturer, name='delete_lecturer'),
+    path('add-lecturers/', views.add_lecturer, name='add-lecturers'),
+    path('edit-lecturer/<pk>/', views.edit_lecturer , name='edit-lecturer'),
+    path('delete-lecturer/<pk>/', views.delete_lecturer, name='delete-lecturer'),
 
-    path('add_rooms', views.addRooms, name='addRooms'),
-    path('rooms_list/', views.room_list, name='editrooms'),
-    path('delete_room/<int:pk>/', views.delete_lecture_room, name='delete_lecture_room'),
+    path('add-lecture-rooms/', views.add_lecture_room, name='add-lectrooms'),
+    path('edit-lecture_room/<pk>/', views.edit_lecture_room, name='edit-lectroom'),
+    path('delete-lecture_room/<pk>/', views.delete_lecture_room, name='delete-lectroom'),
 
-    path('add_timings', views.addTimings, name='addTimings'),
-    path('timings_list/', views.lecture_time_list_view, name='edit_lecture_time'),
-    path('delete_lecture_time/<str:pk>/', views.delete_lecture_time, name='delete_letcure_time'),
+    path('add-lecture-times/', views.add_lecture_time, name='add-lecttimes'),
+    path('edit-lecture-time/<pk>/', views.edit_lecture_room, name='edit-lecttime'),
+    path('delete-lecture-time/<pk>/', views.delete_lecture_time, name='delete-lecttime'),
 
-    path('add_courses', views.addCourses, name='addCourses'),
-    path('courses_list/', views.course_list_view, name='editcourse'),
-    path('delete_course/<str:pk>/', views.delete_course, name='deletecourse'),
+    path('add-courses/', views.add_courses, name='add-courses'),
+    path('edit-course/<pk>/', views.edit_course, name='edit-course'),
+    path('delete-course/<pk>/', views.delete_course, name='delete-course'),
 
-    path('add_departments', views.addDepts, name='addDepts'),
-    path('departments_list/', views.department_list, name='editdepartment'),
-    path('delete_department/<int:pk>/', views.delete_department, name='deletedepartment'),
+    path('add-departments/', views.add_departments, name='add-depts'),
+    path('edit-department/<pk>/', views.edit_department, name='edit-dept'),
+    path('delete-department/<pk>/', views.delete_department, name='delete-dept'),
 
-    path('add_sections', views.addSections, name='addSections'),
-    path('sections_list/', views.section_list, name='editsection'),
-    path('delete_section/<str:pk>/', views.delete_section, name='deletesection'),
+    path('add-sections/', views.add_sections, name='add-sections'),
+    path('edit-section/<pk>/', views.edit_section, name='edit-section'),
+    path('delete-section/<pk>/', views.delete_section, name='delete-section'),
 
-    path('generate_timetable', views.generate, name='generate'),
+    path('generate_timetable/', views.generate, name='generate'),
 
     path('timetable_generation/', views.timetable, name='timetable'),
-    path('timetable_generation/render/pdf', views.Pdf, name='pdf'),
+    path('timetable_generation/render/pdf', views.Pdf.as_view(), name='pdf'),
 
 ]

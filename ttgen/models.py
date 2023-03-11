@@ -58,9 +58,9 @@ class TimeSlot(models.Model):
 
 
 class Course(models.Model):
-    code = models.CharField(max_length=5, primary_key=True)
+    code = models.CharField(max_length=7, primary_key=True)
     title = models.CharField(max_length=40)
-    # max_numb_students = models.CharField(max_length=65)
+    max_numb_students = models.CharField(max_length=65)
     lecturer = models.ManyToManyField(Lecturer)
 
     def __str__(self):
@@ -90,7 +90,7 @@ class Section(models.Model):
     department = models.ForeignKey(Department, on_delete=models.CASCADE)
     num_class_in_week = models.IntegerField(default=0)
     course = models.ForeignKey(Course, on_delete=models.CASCADE, blank=True, null=True)
-    level = models.ForeignKey(Level, on_delete=models, blank=True, null=True)
+    level = models.ForeignKey(Level, on_delete=models.CASCADE, blank=True, null=True)
     time = models.ForeignKey(TimeSlot, on_delete=models.CASCADE, blank=True, null=True)
     room = models.ForeignKey(LectureRoom, on_delete=models.CASCADE, blank=True, null=True)
     lecturer = models.ForeignKey(Lecturer, on_delete=models.CASCADE, blank=True, null=True)

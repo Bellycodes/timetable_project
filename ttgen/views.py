@@ -5,9 +5,14 @@ from .models import *
 from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 from .render import Render
 from django.views.generic import View
-
+from django.views.generic import TemplateView
+from django.urls import reverse_lazy
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib import messages
+from rest_framework.permissions import IsAuthenticated
 
 POPULATION_SIZE = 9
 NUMB_OF_ELITE_SCHEDULES = 1
@@ -17,7 +22,7 @@ MUTATION_RATE = 0.05
 class Data:
     def __init__(self):
         self._rooms = LectureRoom.objects.all()
-        self._timeslots = TimeSlotForm.objects.all()
+        self._timeslots = TimeSlot.objects.all()
         self._lecturer = Lecturer.objects.all()
         self._courses = Course.objects.all()
         self._depts = Department.objects.all()
@@ -223,213 +228,304 @@ def timetable(request):
     return render(request, 'gentimetable.html', {'schedule': schedule, 'sections': Section.objects.all(),
                                               'times': TimeSlotForm.objects.all()})
 
-############################################################################
-
-
-def index(request):
-    return render(request, 'index.html', {})
-
-
-def about(request):
-    return render(request, 'aboutus.html', {})
-
-
-def help(request):
-    return render(request, 'help.html', {})
-
-
-def terms(request):
-    return render(request, 'terms.html', {})
-
-
-def contact(request):
-    if request.method == 'POST':
-        message = request.POST['message']
-
-        send_mail('TTGS Contact',
-                  message,
-                  settings.EMAIL_HOST_USER,
-                  ['codevoid12@gmail.com'],
-                  fail_silently=False)
-    return render(request, 'contact.html', {})
 
 #################################################################################
+class DashboardView(LoginRequiredMixin, TemplateView):
+    template_name = 'ttgen/dashboard.html'
+    paginate_by = 4
+    permission_classes = [IsAuthenticated]
+
+    # Add your context variables here
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # List of lecturers
+        context['lecturers'] = Lecturer.objects.all()
+        # List of courses
+        context['courses'] = Course.objects.all()
+        # List of departments
+        context['departments'] = Department.objects.all()
+        # List of lecture room
+        context['rooms'] = LectureRoom.objects.all()
+        # List of lecture time
+        context['times'] = TimeSlot.objects.all()
+        # List of Section
+        context['sections'] = Section.objects.all()
+
+        return context
+    
+    def handle_no_permission(self):
+        # Redirect to the login page if the user is not authenticated
+        if not self.request.user.is_authenticated:
+            return redirect('account:login')
+        else:
+            return super().handle_no_permission()
+
+
+######################################################################################
+# COURSE FUNCTIONS
 
 @login_required
-def admindash(request):
-    return render(request, 'admindashboard.html', {})
-
-#################################################################################
-
-@login_required
-def addCourses(request):
+def add_courses(request):
     form = CourseForm(request.POST or None)
     if request.method == 'POST':
         if form.is_valid():
-            form.save()
-            return redirect('addCourses')
-        else:
-            print('Invalid')
+            obj = form.save()
+            messages.info(request, f'{obj.title} added sucessfully')
+            obj.save()
+            return redirect('ttgen:add-courses')
+
     context = {
         'form': form
     }
-    return render(request, 'addCourses.html', context)
+    return render(request, 'ttgen/add_courses.html', context)
 
 @login_required
-def course_list_view(request):
+def edit_course(request, pk):
+    course = Course.objects.get(id=pk)
+    form = CourseForm(instance=course)
+    
+    if request.method == 'POST':
+        form = CourseForm(request.POST, instance=course)
+        if form.is_valid():
+            obj = form.save()
+            messages.info(request, f'{obj.title} updated sucessfully')
+            obj.save()
+            return redirect('ttgen:edit-course', pk=obj.pk)
+            
     context = {
-        'courses': Course.objects.all()
+        'course': course,
+        'form': form
     }
-    return render(request, 'courseslist.html', context)
+    return render(request, 'ttgen/edit_course.html', context)
 
 @login_required
 def delete_course(request, pk):
     crs = Course.objects.filter(pk=pk)
     if request.method == 'POST':
         crs.delete()
-        return redirect('editcourse')
+        messages.error(request, f'Course deleted')
+        return redirect('ttgen:dashboard')
 
 #################################################################################
-
+# LECTURER FUNCTIONS
 @login_required
-def addLecturer(request):
+def add_lecturer(request):
     form = LecturerForm(request.POST or None)
     if request.method == 'POST':
         if form.is_valid():
-            form.save()
-            return redirect('addLecturer')
+            obj = form.save()
+            messages.info(request, f'{obj.name} added sucessfully')
+            obj.save()
+            return redirect('ttgen:add-lecturer')
+
     context = {
         'form': form
     }
-    return render(request, 'addLecturer.html', context)
+    return render(request, 'ttgen/add_lecturer.html', context)
 
 @login_required
-def inst_list_view(request):
+def edit_lecturer(request, pk):
+    lecturer = Lecturer.objects.get(id=pk)
+    form = LecturerForm(instance=lecturer)
+    
+    if request.method == 'POST':
+        form = LecturerForm(request.POST, instance=lecturer)
+        if form.is_valid():
+            obj = form.save()
+            messages.info(request, f'{obj.name} updated sucessfully')
+            obj.save()
+            return redirect('ttgen:edit-lecturer', pk=obj.pk)
+            
     context = {
-        'lecturer': Lecturer.objects.all()
+        'lecturer': lecturer,
+        'form': form
     }
-    return render(request, 'inslist.html', context)
+    return render(request, 'ttgen/edit_lecturer.html', context)
 
 @login_required
 def delete_lecturer(request, pk):
-    inst = Lecturer.objects.filter(pk=pk)
+    lecturer = Lecturer.objects.filter(pk=pk)
     if request.method == 'POST':
-        inst.delete()
-        return redirect('editlecturer')
-
+        lecturer.delete()
+        messages.error(request, f'Lecturer deleted')
+        return redirect('ttgen:dashboard')
 #################################################################################
+# LECTURE ROOM FUNCITONS
 
 @login_required
-def addRooms(request):
+def add_lecture_room(request):
     form = LectureRoomForm(request.POST or None)
     if request.method == 'POST':
         if form.is_valid():
-            form.save()
-            return redirect('addRooms')
+            obj = form.save()
+            messages.info(request, f'{obj.r_number} added sucessfully')
+            obj.save()
+            return redirect('ttgen:add-lectroom')
+
     context = {
         'form': form
     }
-    return render(request, 'addRooms.html', context)
+    return render(request, 'ttgen/add_lectRoom.html', context)
 
 @login_required
-def room_list(request):
+def edit_lecture_room(request, pk):
+    room = LectureRoom.objects.get(id=pk)
+    form = LectureRoomForm(instance=room)
+    
+    if request.method == 'POST':
+        form = LectureRoomForm(request.POST, instance=room)
+        if form.is_valid():
+            obj = form.save()
+            messages.info(request, f'{obj.r_number} updated sucessfully')
+            obj.save()
+            return redirect('ttgen:edit-lectroom', pk=obj.pk)
+            
     context = {
-        'lecturerooms': LectureRoom.objects.all()
+        'room': room,
+        'form': form
     }
-    return render(request, 'lectureroomslist.html', context)
+    return render(request, 'ttgen/edit_lectRoom.html', context)
 
 @login_required
 def delete_lecture_room(request, pk):
-    rm = LectureRoom.objects.filter(pk=pk)
+    room = LectureRoom.objects.filter(pk=pk)
     if request.method == 'POST':
-        rm.delete()
-        return redirect('editlecturerooms')
+        room.delete()
+        messages.error(request, f'Lecture Room deleted')
+        return redirect('ttgen:dashboard')
 
 #################################################################################
+# LECTURE TIME FUNCTIONS
 
 @login_required
-def addTimings(request):
+def add_lecture_time(request):
     form = TimeSlotForm(request.POST or None)
     if request.method == 'POST':
         if form.is_valid():
-            form.save()
-            return redirect('addTimings')
-        else:
-            print('Invalid')
+            obj = form.save()
+            messages.info(request, f'{obj.time} added sucessfully')
+            obj.save()
+            return redirect('ttgen:add-lecttime')
+
     context = {
         'form': form
     }
-    return render(request, 'addTimings.html', context)
+    return render(request, 'ttgen/add_lectTime.html', context)
 
 @login_required
-def lecture_time_list_view(request):
+def edit_lecture_time(request, pk):
+    time = TimeSlot.objects.get(id=pk)
+    form = TimeSlotForm(instance=time)
+    
+    if request.method == 'POST':
+        form = TimeSlotForm(request.POST, instance=time)
+        if form.is_valid():
+            obj = form.save()
+            messages.info(request, f'{obj.time} updated sucessfully')
+            obj.save()
+            return redirect('ttgen:edit-lecttime', pk=obj.pk)
+
     context = {
-        'time_slots': TimeSlotForm.objects.all()
+        'time': time,
+        'form': form
     }
-    return render(request, 'mtlist.html', context)
+    return render(request, 'ttgen/edit_lectTime.html', context)
 
 @login_required
 def delete_lecture_time(request, pk):
-    mt = TimeSlotForm.objects.filter(pk=pk)
+    mt = TimeSlot.objects.filter(pk=pk)
     if request.method == 'POST':
         mt.delete()
-        return redirect('edittimeslots')
+        messages.error(request, f'Lecture Time deleted')
+        return redirect('ttgen:dashbpoard')
 
 #################################################################################
+# DEPARTMENTS FUNCTION
 
 @login_required
-def addDepts(request):
+def add_departments(request):
     form = DepartmentForm(request.POST or None)
     if request.method == 'POST':
         if form.is_valid():
-            form.save()
-            return redirect('addDepts')
+            obj = form.save()
+            messages.info(request, f'{obj.dept_name} added sucessfully')
+            obj.save()
+            return redirect('ttgen:add-dept')
     context = {
         'form': form
     }
-    return render(request, 'addDepts.html', context)
+    return render(request, 'ttgen:add_depts.html', context)
 
 @login_required
-def department_list(request):
+def edit_department(request, pk):
+    department = Department.objects.get(id=pk)
+    form = DepartmentForm(instance=department)
+    
+    if request.method == 'POST':
+        form = DepartmentForm(request.POST, instance=department)
+        if form.is_valid():
+            obj = form.save()
+            messages.info(request, f'{obj.dept_name} updated sucessfully')
+            obj.save()
+            return redirect('ttgen:edit-dept', pk=obj.pk)
+            
     context = {
-        'departments': Department.objects.all()
+        'department': department,
+        'form': form
     }
-    return render(request, 'deptlist.html', context)
+    return render(request, 'ttgen/edit_deparment.html', context)
 
 @login_required
 def delete_department(request, pk):
     dept = Department.objects.filter(pk=pk)
     if request.method == 'POST':
         dept.delete()
-        return redirect('editdepartment')
+        messages.error(request, f'Department deleted')
+        return redirect('ttgen:dashboard')
 
 #################################################################################
+# SECTION FUNCTIONS
 
 @login_required
-def addSections(request):
+def add_sections(request):
     form = SectionForm(request.POST or None)
     if request.method == 'POST':
         if form.is_valid():
-            form.save()
-            return redirect('addSections')
+            obj = form.save()
+            messages.info(request, f'Section added sucessfully')
+            obj.save()
+            return redirect('ttgen:add-sections')
     context = {
         'form': form
     }
-    return render(request, 'addSections.html', context)
+    return render(request, 'ttgen:add_sections.html', context)
 
 @login_required
-def section_list(request):
+def edit_section(request, pk):
+    section = Section.objects.get(id=pk)
+    form = SectionForm(instance=section)
+    
+    if request.method == 'POST':
+        form = SectionForm(request.POST, instance=section)
+        if form.is_valid():
+            obj = form.save()
+            messages.info(request, f'Section updated sucessfully')
+            obj.save()
+            return redirect('ttgen:edit-section', pk=obj.pk)
+            
     context = {
-        'sections': Section.objects.all()
+        'section': section,
+        'form': form
     }
-    return render(request, 'seclist.html', context)
+    return render(request, 'ttgen/edit_section.html', context)
 
 @login_required
 def delete_section(request, pk):
     sec = Section.objects.filter(pk=pk)
     if request.method == 'POST':
         sec.delete()
-        return redirect('editsection')
+        messages.error(request, f'Section deleted')
+        return redirect('ttgen:dashboard')
 
 #################################################################################
 
