@@ -18,6 +18,7 @@ class EmailAuthenticationForm(AuthenticationForm):
         if email and password:
             self.user_cache = authenticate(email=email, password=password)
             if self.user_cache is None:
+                messages.error(self.request, 'Invalid email or password')
                 raise forms.ValidationError(
                     self.error_messages['invalid_login'],
                     code='invalid_login',
@@ -26,3 +27,4 @@ class EmailAuthenticationForm(AuthenticationForm):
             else:
                 self.confirm_login_allowed(self.user_cache)
         return self.cleaned_data
+
