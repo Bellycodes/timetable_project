@@ -14,6 +14,16 @@
 </head>
 <body>
     <div class="container">
+        {% block messages %}
+                {% if messages.tags == 'error' %}
+                    <div class="alert alert-success alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×
+                        </button>
+                        <i class="icon fa fa-check"></i> {{ message|capfirst }}
+                    </div>
+                {% endif %}
+        {% endblock messages %}
+
         {% block content %}
         
         {% endblock content %}
