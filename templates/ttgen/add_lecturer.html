@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Add Lecturer{% endblock title %}
+
+{% comment %} Navigation {% endcomment %}
+{% block navigation %}
+    {% include 'ttgen/includes/_navbar_login.html' %}
+{% endblock navigation %}
+
+{% block content %}
+        <h2>Add Lecturer</h2>
+        <h5>
+            Please use the following form to enter the 
+            Lecturer into the system for timetable generation
+        </h5>
+        <div class="container-fluid px-4 py-5">
+            <form method='POST'>
+                {% csrf_token %}
+                {% crispy form %}
+            </form>
+        </div>
+{% endblock content %}

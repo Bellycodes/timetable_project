@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Course List{% endblock title %}
+
+{% comment %} Navigation {% endcomment %}
+{% block navigation %}
+    {% include 'ttgen/includes/_navbar_login.html' %}
+{% endblock navigation %}
+
+{% block content %}
+    <div class="d-flex mb-3 justify-content-between">
+        <h3 class=''>List of Courses</h3>
+        <a href="{% url 'ttgen:add_courses'%}">Back to Add Courses <i class="fas fa-add"></a>
+    </div>
+    {% for section in sections %}
+        <h2 class="">{{ section.section_id }} ({{ section.department }})</h2>
+        <div class="table-responsive text-center">
+            <table class="table table-hover table-bordered table-sm align-middle">
+                <thead class='table-dark'>
+                    <th scope='col'>Class</th>
+                    <th scope='col'>Course</th>
+                    <th scope='col'>Lecture Room</th>
+                    <th scope='col'>Lecturer</th>
+                    <th scope='col'>Time</th>
+                </thead>
+                <tbody>
+                    {% for class in schedule %}
+                    {% if class.section == section.id %}{% endif %}
+                        <tr>
+                            <th scope='row'>{{class.section_id}}</th>
+                            <td>{{class.course}}</td>
+                            <td>{{class.room}}</td>
+                            <td>{{class.instructor}}</td>
+                            <td>{{class.meeting_time}}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endfor %}
+    <button class="submit" id="download">Download</button>
+
+    {% include 'ttgen/includes/_pagination.html' with page=page_obj %}
+{% endblock content %}
