@@ -1,17 +1,17 @@
-{% extends 'base.html' %}
+{% extends 'ttgen/base.html' %}
 {% load crispy_forms_tags %}
 
 {% block title %}Course List{% endblock title %}
 
 {% comment %} Navigation {% endcomment %}
 {% block navigation %}
-    {% include 'ttgen/includes/_navbar_login.html' %}
+    {% include 'ttgen/includes/_navbar.html' %}
 {% endblock navigation %}
 
 {% block content %}
     <div class="d-flex mb-3 justify-content-between">
         <h3 class=''>List of Courses</h3>
-        <a href="{% url 'ttgen:add_courses'%}">Back to Add Courses <i class="fas fa-add"></a>
+        <a href="{% url 'ttgen:add-courses'%}">Back to Add Courses <i class="fas fa-add"></a>
     </div>
     {% for section in sections %}
         <h2 class="">{{ section.section_id }} ({{ section.department }})</h2>
