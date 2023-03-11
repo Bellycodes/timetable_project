@@ -410,7 +410,7 @@ def add_lecture_time(request):
     context = {
         'form': form
     }
-    return render(request, 'ttgen/add_lectTime.html', context)
+    return render(request, 'ttgen/add_time.html', context)
 
 @login_required
 def edit_lecture_time(request, pk):
@@ -454,7 +454,7 @@ def add_departments(request):
     context = {
         'form': form
     }
-    return render(request, 'ttgen:add_depts.html', context)
+    return render(request, 'ttgen/add_depts.html', context)
 
 @login_required
 def edit_department(request, pk):
@@ -498,7 +498,7 @@ def add_sections(request):
     context = {
         'form': form
     }
-    return render(request, 'ttgen:add_sections.html', context)
+    return render(request, 'ttgen/add_sections.html', context)
 
 @login_required
 def edit_section(request, pk):
@@ -531,7 +531,7 @@ def delete_section(request, pk):
 
 @login_required
 def generate(request):
-    return render(request, 'generate.html', {})
+    return render(request, 'ttgen/generate_timetable.html', {})
 
 #################################################################################
 
@@ -540,6 +540,6 @@ class Pdf(View):
         params = {
             'request': request
         }
-        return Render.render('gentimetable.html', params)
+        return Render.render('ttgen/gentimetable.html', params)
 
 
