@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 import os
 from pathlib import Path
+from django.urls import reverse_lazy
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -55,8 +56,9 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
 ]
 
-LOGIN_URL='account:login'
-LOGIN_REDIRECT_URL = 'ttgen:dashboard' 
+LOGIN_URL=  reverse_lazy('account:login')
+LOGIN_REDIRECT_URL = reverse_lazy('ttgen:dashboard')
+LOGOUT_REDIRECT_URL = reverse_lazy('account:login')
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
