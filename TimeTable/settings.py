@@ -52,8 +52,7 @@ INSTALLED_APPS = [
 
 AUTH_USER_MODEL = 'accounts.User'
 AUTHENTICATION_BACKENDS = [
-    'backend.EmailBackend',
-    'django.contrib.auth.backends.ModelBackend',
+    'accounts.backend.EmailBackend',
 ]
 
 LOGIN_URL=  reverse_lazy('account:login')
@@ -138,7 +137,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = "/static/"
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_ROOT = BASE_DIR / 'static'
 
 
 
