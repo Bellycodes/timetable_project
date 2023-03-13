@@ -1,30 +1,23 @@
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.auth import authenticate
-from django.contrib import messages
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Submit
+from .models import User
 
-class EmailAuthenticationForm(AuthenticationForm):
+class LoginForm(AuthenticationForm):
     email = forms.EmailField(label="Email")
+    password = forms.CharField(label='Password',widget=forms.PasswordInput(attrs={'required': True}))
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['username'].widget.attrs.pop('autofocus', None)
-        self.fields['username'].label = 'Email'
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            'email',
+            'password',
+            Submit('submit', 'Login', css_class='col-md-12 justify-content-center')
+        )
     
-    def clean(self):
-        email = self.cleaned_data.get('email')
-        password = self.cleaned_data.get('password')
-
-        if email and password:
-            self.user_cache = authenticate(email=email, password=password)
-            if self.user_cache is None:
-                messages.error(self.request, 'Invalid email or password')
-                raise forms.ValidationError(
-                    self.error_messages['invalid_login'],
-                    code='invalid_login',
-                    params={'username': self.username_field.verbose_name},
-                )
-            else:
-                self.confirm_login_allowed(self.user_cache)
-        return self.cleaned_data
+    class Meta:
+        model = User
+        fields = ('email', 'password')
 
