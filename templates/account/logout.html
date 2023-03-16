@@ -4,7 +4,7 @@
 <div class="row justify-content-center mt-5">
   <div class="col-lg-4 col-md-6 col-sm-8">
     <h2 class="text-center mb-4">Logout</h2>
-    <form action="{% url 'account:logout' %}" method="POST">
+    <form action="{% url 'account_logout' %}" method="POST">
       {% csrf_token %}
       <button type="submit" class="btn btn-danger btn-block">Logout</button>
     </form>
