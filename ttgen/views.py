@@ -231,6 +231,7 @@ def timetable(request):
 
 #################################################################################
 class DashboardView(LoginRequiredMixin, TemplateView):
+    login_url = '/accounts/login/'
     template_name = 'ttgen/dashboard.html'
     paginate_by = 4
     permission_classes = [IsAuthenticated]
@@ -253,12 +254,6 @@ class DashboardView(LoginRequiredMixin, TemplateView):
 
         return context
     
-    def handle_no_permission(self):
-        # Redirect to the login page if the user is not authenticated
-        if not self.request.user.is_authenticated:
-            return redirect('account:login')
-        else:
-            return super().handle_no_permission()
 
 
 ######################################################################################
