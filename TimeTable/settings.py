@@ -42,7 +42,10 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     
     'rest_framework',
-    
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+
     "crispy_forms",
     "crispy_bootstrap5",
     
@@ -50,14 +53,30 @@ INSTALLED_APPS = [
     'ttgen',
 ]
 
-AUTH_USER_MODEL = 'accounts.User'
-AUTHENTICATION_BACKENDS = [
-    'accounts.backend.EmailBackend',
-]
+# config/settings.py
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-LOGIN_URL=  reverse_lazy('account:login')
-LOGIN_REDIRECT_URL = reverse_lazy('ttgen:dashboard')
-LOGOUT_REDIRECT_URL = reverse_lazy('account:login')
+AUTHENTICATION_BACKENDS = (
+    # Needed to login by username in Django admin, regardless of `allauth`
+    "django.contrib.auth.backends.ModelBackend",
+
+    # `allauth` specific authentication methods, such as login by e-mail
+    "allauth.account.auth_backends.AuthenticationBackend",
+)
+
+SITE_ID = 1
+
+AUTH_USER_MODEL = 'accounts.User'
+
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = False
+ACCOUNT_SESSION_REMEMBER = True
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_UNIQUE_EMAIL = True
+
+LOGIN_REDIRECT_URL = 'ttgen:dashboard'
+ACCOUNT_LOGOUT_REDIRECT_URL = 'login'
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -136,8 +155,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-STATIC_URL = "/static/"
-STATIC_ROOT = BASE_DIR / 'static'
+STATIC_URL = "static/"
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 
 
