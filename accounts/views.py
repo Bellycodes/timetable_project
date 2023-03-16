@@ -1,14 +1,17 @@
-from django.shortcuts import render, redirect
+from django.urls import reverse
 from django.contrib.auth.views import LoginView, LogoutView
-from django.urls import reverse_lazy
 from .forms import LoginForm
-from django.contrib.auth import authenticate, login
-from django.contrib import messages
-import pdb
-
 class LoginView(LoginView):
     form_class = LoginForm
     template_name = 'account/login.html'
+    redirect_authenticated_user =True
+    
+    def get_success_url(self):
+        url = self.get_redirect_url()
+        if url:
+            return url
+        else:
+            return reverse('ttgen:dashboard')
     
 
 class LogoutView(LogoutView):

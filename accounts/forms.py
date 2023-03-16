@@ -1,10 +1,10 @@
 from django import forms
-from django.contrib.auth.forms import AuthenticationForm
+from allauth.account.forms import LoginForm
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit
 from .models import User
 
-class LoginForm(AuthenticationForm):
+class LoginForm(LoginForm):
     email = forms.EmailField(label="Email")
     password = forms.CharField(label='Password',widget=forms.PasswordInput(attrs={'required': True}))
 
@@ -20,4 +20,5 @@ class LoginForm(AuthenticationForm):
     class Meta:
         model = User
         fields = ('email', 'password')
+        
 
