@@ -5,212 +5,236 @@
 
 {% comment %} Navigation {% endcomment %}
 {% block navigation %}
-    {% include 'ttgen/includes/_navbar.html' %}
+{% include 'ttgen/includes/_navbar.html' %}
 {% endblock navigation %}
 
 {% block content %}
-	<div class="row">
-		<div class="col-md-4">
-			<!-- List of Lecturers -->
-			<section class="card">
-			    <div class="d-flex mb-3 justify-content-between">
-			        <h3 class=''>List of Lecturers</h3>
-			        <a href="{% url 'ttgen:add-lecturers'%}">Add Lecturer <i class="fas fa-add"></a>
-			    </div>
-			    <div class="table-responsive text-center">
-			        <table class="table table-hover table-bordered table-sm align-middle">
-			            <thead class='table-dark'>
-			                <th scope='col'>S/N</th>
-			                <th scope='col'>UUID</th>
-			                <th scope='col'>Name</th>
-			                <th scope='col'>Action</th>
-			            </thead>
-			            <tbody>
-			                {% for lect in lecturers %}
-			                    <tr>
-			                        <td>{{ lect.id }}</td>
-			                        <td>{{ lect.uid }}</td>
-			                        <td>{{ lect.name}}</td>
-			                        <td>
-			                            <a class='btn btn-warning me-3' href="{% url 'ttgen:edit-lecturer' lect.id %}">Edit <i class="fa-regular fa-pen-to-square"></i></a>
-			                            <a class='btn btn-danger' href="{% url 'ttgen:delete-lecturer' lect.id %}">Delete <i class="fa-regular fa-trash-can"></i></a>
-			                        </td>
-			                    </tr>
-			                {% endfor %}
-			            </tbody>
-			        </table>
-			    </div>
-			    {% include 'ttgen/includes/_pagination.html' with page=page_obj %}
-			</section>
+<div class="row gx-5">
+	<div class="col">
+		<!-- List of Lecturers -->
+		<div class="d-flex mb-3 justify-content-between">
+			<h3 class=''>List of Lecturers</h3>
+			<a class="btn btn-primary" href="{% url 'ttgen:add-lecturer'%}">Add Lecturer <i class="fas fa-add"></i></a>
 		</div>
-
-		<!-- List of courses -->
-		<div class="col-md-4">
-			<section class="card">
-				<div class="d-flex mb-3 justify-content-between">
-			        <h3 class=''>List of Courses</h3>
-			        <a href="{% url 'ttgen:add-courses'%}">Add Course <i class="fas fa-add"></a>
-			    </div>
-			    <div class="table-responsive text-center">
-			        <table class="table table-hover table-bordered table-sm align-middle">
-			            <thead class='table-dark'>
-			                <th scope='col'>Course Code</th>
-			                <th scope='col'>Course Title</th>
-			                <th scope='col'>Course Lecturer</th>
-			                <th scope='col'>Action</th>
-			            </thead>
-			            <tbody>
-			                {% for crs in courses %}
-			                    <tr>
-			                        <td>{{crs.code}}</td>
-			                        <td>{{crs.title}}</td>
-			                        <td>{{crs.lecturer}}</td>
-			                        <td>{{ dept.dept_name }}</td>
-			                        <td>
-			                            <a class='btn btn-warning me-3' href="{% url 'ttgen:edit-course' crs.id %}">Edit <i class="fa-regular fa-pen-to-square"></i></a>
-			                            <a class='btn btn-danger' href="{% url 'ttgen:delete-course' crs.id %}">Delete <i class="fa-regular fa-trash-can"></i></a>
-			                        </td>
-			                    </tr>
-			                {% endfor %}
-			            </tbody>
-			        </table>
-			    </div>
-			    {% include 'ttgen/includes/_pagination.html' with page=page_obj %}
-			</section>
-		</div>
-
-		<div class="col-md-2">
-			<!-- List of Departments -->
-			<section class="card">
-				<div class="d-flex mb-3 justify-content-between">
-			        <h3 class=''>List of Depatments</h3>
-			        <a href="{% url 'ttgen:add-depts'%}">Add Department <i class="fas fa-add"></a>
-			    </div>
-			    <div class="table-responsive text-center">
-			        <table class="table table-hover table-bordered table-sm align-middle">
-			            <thead class='table-dark'>
-			                <th scope='col'>Department</th>
-			                <th scope='col'>Action</th>
-			            </thead>
-			            <tbody>
-			                {% for dept in departments %}
-			                    <tr>
-			                        <td>{{ dept.dept_name }}</td>
-			                        <td>
-			                            <a class='btn btn-warning me-3' href="{% url 'ttgen:edit-dept' dept.id %}">Edit <i class="fa-regular fa-pen-to-square"></i></a>
-			                            <a class='btn btn-danger' href="{% url 'ttgen:delete-dept' dept.id %}">Delete <i class="fa-regular fa-trash-can"></i></a>
-			                        </td>
-			                    </tr>
-			                {% endfor %}
-			            </tbody>
-			        </table>
-			    </div>
-			    {% include 'ttgen/includes/_pagination.html' with page=page_obj %}
-			</section>
+		<div class="table-responsive text-center">
+			<table class="table table-hover table-bordered table-sm align-middle">
+				<thead class='table-dark'>
+					<th scope='col'>S/N</th>
+					<th scope='col'>Name</th>
+					<th scope='col'>Action</th>
+				</thead>
+				<tbody>
+					{% for lect in lecturers %}
+					<tr>
+						<td>{{ lect.id }}</td>
+						<td>{{ lect.name}}</td>
+						<td>
+							<a class='btn btn-warning me-3' href="{% url 'ttgen:edit-lecturer' lect.id %}">Edit <i
+									class="fa-regular fa-pen-to-square"></i></a>
+							<a class='btn btn-danger' href="{% url 'ttgen:delete-lecturer' lect.id %}">Delete <i
+									class="fa-regular fa-trash-can"></i></a>
+						</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+			{% include 'ttgen/includes/_pagination.html' with page=page_obj %}
 		</div>
 	</div>
-
-
-	<div class="row">
-		<div class="col-md-2">
-			<!-- List of Lecture Room -->
-			<section class="card">
-			    <div class="d-flex mb-3 justify-content-between">
-			        <h3 class=''>List of Lecture Rooms</h3>
-			        <a href="{% url 'ttgen:add-lectrooms'%}">Add Lecture Rooms<i class="fas fa-add"></a>
-			    </div>
-			    <div class="table-responsive text-center">
-			        <table class="table table-hover table-bordered table-sm align-middle">
-			            <thead class='table-dark'>
-			                <th scope='col'>Room No.</th>
-			                <th scope='col'>Seat Capacity</th>
-			                <th scope='col'>Action</th>
-			            </thead>
-			            <tbody>
-			                {% for rm in rooms %}
-			                    <tr>
-			                        <td>{{ rm.r_number }}</td>
-			                        <td>{{ rm.seating_capacity }}</td>
-			                        <td>
-			                            <a class='btn btn-warning me-3' href="{% url 'ttgen:edit-lectroom' rm.id %}">Edit <i class="fa-regular fa-pen-to-square"></i></a>
-			                            <a class='btn btn-danger' href="{% url 'ttgen:delete-lectroom' rm.id %}">Delete <i class="fa-regular fa-trash-can"></i></a>
-			                        </td>
-			                    </tr>
-			                {% endfor %}
-			            </tbody>
-			        </table>
-			    </div>
-			    {% include 'ttgen/includes/_pagination.html' with page=page_obj %}
-			</section>
+	<div class="col">
+				<div class="d-flex mb-3 justify-content-between">
+			<h3 class=''>List of Courses</h3>
+			<a class="btn btn-primary" href="{% url 'ttgen:add-courses'%}">Add Course <i class="fas fa-add"></i></a>
 		</div>
-
-		<!-- List of Lecture Time -->
-		<div class="col-md-4">
-			<section class="card">
-			    <div class="d-flex mb-3 justify-content-between">
-			        <h3 class=''>List of Lecture Time</h3>
-			        <a href="{% url 'ttgen:add-lecttimes'%}">Add Lecture Time <i class="fas fa-add"></a>
-			    </div>
-			    <div class="table-responsive text-center">
-			        <table class="table table-hover table-bordered table-sm align-middle">
-			            <thead class='table-dark'>
-			                <th scope='col'>PID/th>
-			                <th scope='col'>Day</th>
-			                <th scope='col'>Time</th>
-			                <th scope='col'>Action</th>
-			            </thead>
-			            <tbody>
-			                {% for tm in times %}
-			                    <tr>
-			                        <td>{{ tm.pid }}</td>
-			                        <td>{{ tm.day }}</td>
-			                        <td>{{ tm.time }}</td>
-			                        <td>
-			                            <a class='btn btn-warning me-3' href="{% url 'ttgen:edit-lecttime' tm.id %}">Edit <i class="fa-regular fa-pen-to-square"></i></a>
-			                            <a class='btn btn-danger' href="{% url 'ttgen:delete-lecttime' tm.id %}">Delete <i class="fa-regular fa-trash-can"></i></a>
-			                        </td>
-			                    </tr>
-			                {% endfor %}
-			            </tbody>
-			        </table>
-			    </div>
-			    {% include 'ttgen/includes/_pagination.html' with page=page_obj %}
-			</section>
+		<div class="table-responsive text-center">
+			<table class="table table-hover table-bordered table-sm align-middle">
+				<thead class='table-dark'>
+					<th scope='col'>Course Code</th>
+					<th scope='col'>Course Title</th>
+					<th scope='col'>Action</th>
+				</thead>
+				<tbody>
+					{% for crs in courses %}
+					<tr>
+						<td>{{crs.code}}</td>
+						<td>{{crs.title}}</td>
+						<td>
+							<a class='btn btn-warning me-3' href="{% url 'ttgen:edit-course' crs.code %}">Edit <i
+									class="fa-regular fa-pen-to-square"></i></a>
+							<a class='btn btn-danger' href="{% url 'ttgen:delete-course' crs.code %}">Delete <i
+									class="fa-regular fa-trash-can"></i></a>
+						</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
 		</div>
-
-		<div class="col-md-4">
-			<!-- List of Section -->
-			<section class="card">
-			    <div class="d-flex mb-3 justify-content-between">
-			        <h3 class=''>List of Section</h3>
-			        <a href="{% url 'ttgen:add-sections'%}">Add Section <i class="fas fa-add"></a>
-			    </div>
-			    <div class="table-responsive text-center">
-			        <table class="table table-hover table-bordered table-sm align-middle">
-			            <thead class='table-dark'>
-			                <th scope='col'>Section ID</th>
-			                <th scope='col'>Department</th>
-			                <th scope='col'>Total Classes</th>
-			                <th scope='col'>Action</th>
-			            </thead>
-			            <tbody>
-			                {% for sec in sections %}
-			                        <tr>
-			                        <td>{{sec.section_id}}</td>
-			                        <td>{{sec.department}}</td>
-			                        <td>{{sec.num_class_in_week }}</td>
-			                        <td>
-			                            <a class='btn btn-warning me-3' href="{% url 'ttgen:edit-section' section.id %}">Edit <i class="fa-regular fa-pen-to-square"></i></a>
-			                            <a class='btn btn-danger' href="{% url 'ttgen:delete-section' section.id %}">Delete <i class="fa-regular fa-trash-can"></i></a>
-			                        </td>
-			                    </tr>
-			                {% endfor %}
-			            </tbody>
-			        </table>
-			    </div>
-			    {% include 'ttgen/includes/_pagination.html' with page=page_obj %}
-			</section>
-		</div>
+		{% include 'ttgen/includes/_pagination.html' with page=page_obj %}
 	</div>
+</div>
+
+<div class='row gx-5'>
+	<div class="col">
+		<!-- List of Level -->
+		<div class="d-flex mb-3 justify-content-between">
+			<h3 class=''>List of Levels</h3>
+			<a class="btn btn-primary"  href="{% url 'ttgen:add-level'%}">Add Level <i class="fas fa-add"></i></a>
+		</div>
+		<div class="table-responsive text-center">
+			<table class="table table-hover table-bordered table-sm align-middle">
+				<thead class='table-dark'>
+					<th scope='col'>S/N</th>
+					<th scope='col'>Level</th>
+					<th scope='col'>Action</th>
+				</thead>
+				<tbody>
+					{% for lvl in level %}
+					<tr>
+						<td>{{ lvl.id }}</td>
+						<td>{{ lvl.level }}</td>
+						<td>
+							<a class='btn btn-warning me-3' href="{% url 'ttgen:edit-level' lvl.id %}">Edit <i
+									class="fa-regular fa-pen-to-square"></i></a>
+							<a class='btn btn-danger' href="{% url 'ttgen:delete-level' lvl.id %}">Delete <i
+									class="fa-regular fa-trash-can"></i></a>
+						</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+		{% include 'ttgen/includes/_pagination.html' with page=page_obj %}
+	</div>
+	<div class="col">
+		<!-- List of Departments -->
+		<div class="d-flex mb-3 justify-content-between">
+			<h3 class=''>List of Depatments</h3>
+			<a class="btn btn-primary"  href="{% url 'ttgen:add-dept'%}">Add Department <i class="fas fa-add"></i></a>
+		</div>
+		<div class="table-responsive text-center">
+			<table class="table table-hover table-bordered table-sm align-middle">
+				<thead class='table-dark'>
+					<th scope='col'>Department</th>
+					<th scope='col'>Action</th>
+				</thead>
+				<tbody>
+					{% for dept in departments %}
+					<tr>
+						<td>{{ dept.dept_name }}</td>
+						<td>
+							<a class='btn btn-warning me-3' href="{% url 'ttgen:edit-dept' dept.id %}">Edit <i
+									class="fa-regular fa-pen-to-square"></i></a>
+							<a class='btn btn-danger' href="{% url 'ttgen:delete-dept' dept.id %}">Delete <i
+									class="fa-regular fa-trash-can"></i></a>
+						</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+		{% include 'ttgen/includes/_pagination.html' with page=page_obj %}
+	</div>
+</div>
+<div class='row gx-5'>
+		<div class="col">
+		<!-- List of Lecture Room -->
+		<div class="d-flex mb-3 justify-content-between">
+			<h3 class=''>List of Lecture Rooms</h3>
+			<a class="btn btn-primary"  href="{% url 'ttgen:add-lectrooms'%}">Add Lecture Rooms<i class="fas fa-add"></i></a>
+		</div>
+		<div class="table-responsive text-center">
+			<table class="table table-hover table-bordered table-sm align-middle">
+				<thead class='table-dark'>
+					<th scope='col'>Room No.</th>
+					<th scope='col'>Seat Capacity</th>
+					<th scope='col'>Action</th>
+				</thead>
+				<tbody>
+					{% for rm in rooms %}
+					<tr>
+						<td>{{ rm.r_number }}</td>
+						<td>{{ rm.seating_capacity }}</td>
+						<td>
+							<a class='btn btn-warning me-3' href="{% url 'ttgen:edit-lectroom' rm.id %}">Edit <i
+									class="fa-regular fa-pen-to-square"></i></a>
+							<a class='btn btn-danger' href="{% url 'ttgen:delete-lectroom' rm.id %}">Delete <i
+									class="fa-regular fa-trash-can"></i></a>
+						</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+		{% include 'ttgen/includes/_pagination.html' with page=page_obj %}
+	</div>
+
+	<!-- List of Lecture Time -->
+	<div class="col">
+		<div class="d-flex mb-3 justify-content-between">
+			<h3 class=''>List of Lecture Time</h3>
+			<a class="btn btn-primary"  href="{% url 'ttgen:add-lecttime'%}">Add Lecture Time <i class="fas fa-add"></i></a>
+		</div>
+		<div class="table-responsive text-center">
+			<table class="table table-hover table-bordered table-sm align-middle">
+				<thead class='table-dark'>
+					<th scope='col'>Day</th>
+					<th scope='col'>Time</th>
+					<th scope='col'>Action</th>
+				</thead>
+				<tbody>
+					{% for tm in times %}
+					<tr>
+						<td>{{ tm.day }}</td>
+						<td>{{ tm.time }}</td>
+						<td>
+							<a class='btn btn-warning me-3' href="{% url 'ttgen:edit-lecttime' tm.id %}">Edit <i
+									class="fa-regular fa-pen-to-square"></i></a>
+							<a class='btn btn-danger' href="{% url 'ttgen:delete-lecttime' tm.id %}">Delete <i
+									class="fa-regular fa-trash-can"></i></a>
+						</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+		{% include 'ttgen/includes/_pagination.html' with page=page_obj %}
+	</div>
+</div>
+
+<div class='row gx-5'>
+	<div class="col">
+		<!-- List of Section -->
+		<div class="d-flex mb-3 justify-content-between">
+			<h3 class=''>List of Section</h3>
+			<a class="btn btn-primary"  href="{% url 'ttgen:add-sections'%}">Add Section <i class="fas fa-add"></i></a>
+		</div>
+		<div class="table-responsive text-center">
+			<table class="table table-hover table-bordered table-sm align-middle">
+				<thead class='table-dark'>
+					<th scope='col'>Section ID</th>
+					<th scope='col'>Department</th>
+					<th scope='col'>Total Classes</th>
+					<th scope='col'>Action</th>
+				</thead>
+				<tbody>
+					{% for sec in sections %}
+					<tr>
+						<td>{{sec.id}}</td>
+						<td>{{sec.department}}</td>
+						<td>{{sec.num_class_in_week }}</td>
+						<td>
+							<a class='btn btn-warning me-3' href="{% url 'ttgen:edit-section' sec.id %}">Edit <i
+									class="fa-regular fa-pen-to-square"></i></a>
+							<a class='btn btn-danger' href="{% url 'ttgen:delete-section' sec.id %}">Delete <i
+									class="fa-regular fa-trash-can"></i></a>
+						</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+		{% include 'ttgen/includes/_pagination.html' with page=page_obj %}
+	</div>
+</div>
 
 {% endblock content %}

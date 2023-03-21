@@ -1,7 +1,7 @@
 {% extends 'ttgen/base.html' %}
 {% load crispy_forms_tags %}
 
-{% block title %}Add Departments{% endblock title %}
+{% block title %}Add Level{% endblock title %}
 
 {% comment %} Navigation {% endcomment %}
 {% block navigation %}
@@ -10,12 +10,12 @@
 
 {% block content %}
         <div class="d-flex">
-            <h2 class="me-5">Add Departments</h2>
+            <h2 class="me-5">Add Level</h2>
             <a href="{% url 'ttgen:dashboard' %}" class='btn btn-primary'>Back</a>
-        </div>
+        </div> 
         <h5>
             Please use the following form to enter the 
-            Departments into the system for timetable generation
+            Level into the system for timetable generation
         </h5>
         <div class="container-fluid px-4 py-5">
             <form method='POST'>

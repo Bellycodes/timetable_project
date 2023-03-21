@@ -1,76 +1,67 @@
-*{
-	margin: 0;
-	padding: 0;
-	box-sizing: border-box;
-	font-family: sans-serif;
+@import url('https://fonts.googleapis.com/css2?family=Genos:wght@100;300;400;500;600;900&display=swap');
 
-}
 html{
-	scroll-behavior: smooth;
-}
-a{
-	text-decoration:none;
-}
-button
-{
-	border-style:none;
+    scroll-behavior: smooth;
 }
 
-.card-header {
-	background-color: #007bff;
-	color: #fff;
+.btn-primary{
+    background-color: rgb(3, 116, 150);
+    color: #fff;
+    border: none;
 }
 
-.card-header h2 {
-	margin: 0;
+.btn-primary:hover{
+    background-color: rgb(1, 47, 61);
 }
 
-.card-body {
-	padding: 20px;
+body{
+    font-family: Genos;
+    box-sizing: border-box;
 }
 
-.list-group-item {
-	padding: 10px;
-	border-radius: 0;
-	border-top: none;
-	border-right: none;
-	border-left: none;
-	font-size: 18px;
-	font-weight: bold;
-	color: #007bff;
-	background-color: #f5f5f5;
+h1{
+    font-weight: 900;
 }
 
-.list-group-item:last-child {
-	border-bottom: none;
+h2{
+    font-weight: 600;
 }
 
-.form-group label {
-	font-weight: bold;
-	color: #007bff;
-	font-size: 18px;
+.navbar{
+    background-color: rgb(3, 116, 150);
+    font-size: 18px;
+    height: 8vh;
 }
 
-.form-control {
-	border-radius: 0;
-	border: none;
-	border-bottom: 2px solid #007bff;
-	font-size: 18px;
-	font-weight: bold;
-	color: #333;
-	padding: 10px;
+.navbar .navbar-brand{
+    color: #fff;
+    font-size: 20px;
+    
 }
 
-.btn-primary {
-	background-color: #007bff;
-	border-color: #007bff;
-	font-size: 18px;
-	font-weight: bold;
-	padding: 10px 20px;
-	border-radius: 0;
+.navbar .navbar-brand span{
+    color: rgb(1, 47, 61);
 }
 
-.btn-primary:hover {
-	background-color: #0069d9;
-	border-color: #0062cc;
+.navbar .nav-link{
+    color: #fff;
+    margin-left: 12px;
+}
+
+.navbar-nav .nav-link.active{
+    color: rgb(1, 47, 61);
+}
+
+.navbar-nav .nav-link:hover{
+    color: rgb(1, 47, 61);
+}
+
+.navbar .btn{
+    background-color: #fff; 
+    color: rgb(1, 47, 61);
+}
+
+.navbar .btn span{
+    background-color: rgb(1, 47, 61); 
+    color: #fff;
 }

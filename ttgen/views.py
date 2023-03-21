@@ -1,15 +1,11 @@
-from django.http import request
+import random
 from django.shortcuts import render, redirect
 from . forms import *
 from .models import *
-from django.core.mail import send_mail
-from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
 from .render import Render
 from django.views.generic import View
 from django.views.generic import TemplateView
-from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from rest_framework.permissions import IsAuthenticated
@@ -26,6 +22,7 @@ class Data:
         self._lecturer = Lecturer.objects.all()
         self._courses = Course.objects.all()
         self._depts = Department.objects.all()
+        self._sections = Section.objects.all()
 
     def get_rooms(self): return self._rooms
 
@@ -35,11 +32,15 @@ class Data:
 
     def get_depts(self): return self._depts
 
-    def get_timeslots(self): return self._timeslots
-
-
+    def get_lecture_times(self): return self._timeslots
+    
+    def get_sections(self): return self._sections
+    
+    
+data = Data()
+    
 class Schedule:
-    def __init__(self):
+    def __init__(self, data):
         self._data = data
         self._classes = []
         self._numberOfConflicts = 0
@@ -51,7 +52,8 @@ class Schedule:
         self._isFitnessChanged = True
         return self._classes
 
-    def get_numbOfConflicts(self): return self._numberOfConflicts
+    def get_numbOfConflicts(self): 
+        return self._numberOfConflicts
 
     def get_fitness(self):
         if self._isFitnessChanged:
@@ -60,32 +62,32 @@ class Schedule:
         return self._fitness
 
     def initialize(self):
-        sections = Section.objects.all()
+        sections = self._data.get_sections()
         for section in sections:
             dept = section.department
             n = section.num_class_in_week
-            if n <= len(TimeSlotForm.objects.all()):
+            if n <= len(self._data.get_lecture_times()):
                 courses = dept.courses.all()
                 for course in courses:
                     for i in range(n // len(courses)):
-                        crs_inst = course.lecturer.all()
-                        newClass = Class(self._classNumb, dept, section.section_id, course)
+                        crs_lecturer = course.lecturer.all()
+                        newClass = Class(self._classNumb, dept, section, course)
                         self._classNumb += 1
-                        newClass.set_time(data.get_meetingTimes()[rnd.randrange(0, len(TimeSlotForm.objects.all()))])
-                        newClass.set_room(data.get_rooms()[rnd.randrange(0, len(data.get_rooms()))])
-                        newClass.set_lecturers(crs_inst[rnd.randrange(0, len(crs_inst))])
+                        newClass.set_lecture_time(self._data.get_lecture_times()[random.randrange(0, len(self._data.get_lecture_times()))])
+                        newClass.set_room(self._data.get_rooms()[random.randrange(0, len(self._data.get_rooms()))])
+                        newClass.set_lecturer(crs_lecturer[random.randrange(0, len(crs_lecturer))])
                         self._classes.append(newClass)
             else:
-                n = len(TimeSlotForm.objects.all())
+                n = len(self._data.get_lecture_times())
                 courses = dept.courses.all()
                 for course in courses:
                     for i in range(n // len(courses)):
-                        crs_inst = course.lecturer.all()
-                        newClass = Class(self._classNumb, dept, section.section_id, course)
+                        crs_lecturer = course.lecturer.all()
+                        newClass = Class(self._classNumb, dept, section, course)
                         self._classNumb += 1
-                        newClass.set_meetingTime(data.get_meetingTimes()[rnd.randrange(0, len(TimeSlotForm.objects.all()))])
-                        newClass.set_room(data.get_rooms()[rnd.randrange(0, len(data.get_rooms()))])
-                        newClass.set_instructor(crs_inst[rnd.randrange(0, len(crs_inst))])
+                        newClass.set_lecture_time(self._data.get_lecture_times()[random.randrange(0, len(self._data.get_lecture_times()))])
+                        newClass.set_room(self._data.get_rooms()[random.randrange(0, len(self._data.get_rooms()))])
+                        newClass.set_lecturer(crs_lecturer[random.randrange(0, len(crs_lecturer))])
                         self._classes.append(newClass)
 
         return self
@@ -96,25 +98,26 @@ class Schedule:
         for i in range(len(classes)):
             if classes[i].room.seating_capacity < int(classes[i].course.max_numb_students):
                 self._numberOfConflicts += 1
-            for j in range(len(classes)):
-                if j >= i:
-                    if (classes[i].meeting_time == classes[j].meeting_time) and \
-                            (classes[i].section_id != classes[j].section_id) and (classes[i].section == classes[j].section):
-                        if classes[i].room == classes[j].room:
-                            self._numberOfConflicts += 1
-                        if classes[i].instructor == classes[j].instructor:
-                            self._numberOfConflicts += 1
+            for j in range(i+1, len(classes)):
+                if (classes[i].lecture_time == classes[j].lecture_time) and \
+                        (classes[i].section_id != classes[j].section_id) and (classes[i].section == classes[j].section):
+                    if classes[i].room == classes[j].room:
+                        self._numberOfConflicts += 1
+                    if classes[i].lecturer == classes[j].lecturer:
+                        self._numberOfConflicts += 1
         return 1 / (1.0 * self._numberOfConflicts + 1)
 
 
+
 class Population:
-    def __init__(self, size):
+    def __init__(self, size, data):
         self._size = size
         self._data = data
-        self._schedules = [Schedule().initialize() for i in range(size)]
+        self._schedules = [Schedule(self._data).initialize() for i in range(size)]
 
     def get_schedules(self):
         return self._schedules
+
 
 
 class GeneticAlgorithm:
@@ -122,7 +125,7 @@ class GeneticAlgorithm:
         return self._mutate_population(self._crossover_population(population))
 
     def _crossover_population(self, pop):
-        crossover_pop = Population(0)
+        crossover_pop = Population(0, data)
         for i in range(NUMB_OF_ELITE_SCHEDULES):
             crossover_pop.get_schedules().append(pop.get_schedules()[i])
         i = NUMB_OF_ELITE_SCHEDULES
@@ -139,7 +142,7 @@ class GeneticAlgorithm:
         return population
 
     def _crossover_schedule(self, schedule1, schedule2):
-        crossoverSchedule = Schedule().initialize()
+        crossoverSchedule = Schedule(data).initialize()
         for i in range(0, len(crossoverSchedule.get_classes())):
             if rnd.random() > 0.5:
                 crossoverSchedule.get_classes()[i] = schedule1.get_classes()[i]
@@ -148,14 +151,14 @@ class GeneticAlgorithm:
         return crossoverSchedule
 
     def _mutate_schedule(self, mutateSchedule):
-        schedule = Schedule().initialize()
+        schedule = Schedule(data).initialize()
         for i in range(len(mutateSchedule.get_classes())):
             if MUTATION_RATE > rnd.random():
                 mutateSchedule.get_classes()[i] = schedule.get_classes()[i]
         return mutateSchedule
 
     def _select_tournament_population(self, pop):
-        tournament_pop = Population(0)
+        tournament_pop = Population(0, data)
         i = 0
         while i < TOURNAMENT_SELECTION_SIZE:
             tournament_pop.get_schedules().append(pop.get_schedules()[rnd.randrange(0, POPULATION_SIZE)])
@@ -169,8 +172,8 @@ class Class:
         self.section_id = id
         self.department = dept
         self.course = course
-        self.instructor = None
-        self.meeting_time = None
+        self.lecturer = None
+        self.lecture_time = None
         self.room = None
         self.section = section
 
@@ -180,53 +183,60 @@ class Class:
 
     def get_course(self): return self.course
 
-    def get_instructor(self): return self.instructor
+    def get_lecturer(self): return self.lecturer
 
-    def get_meetingTime(self): return self.meeting_time
+    def get_lecture_time(self): return self.lecture_time
 
     def get_room(self): return self.room
 
-    def set_instructor(self, instructor): self.instructor = instructor
+    def set_lecturer(self, lecturer): self.lecturer = lecturer
 
-    def set_meetingTime(self, meetingTime): self.meeting_time = meetingTime
+    def set_lecture_time(self, lecture_time): self.lecture_time = lecture_time
 
     def set_room(self, room): self.room = room
-
-
-data = Data()
 
 
 def context_manager(schedule):
     classes = schedule.get_classes()
     context = []
-    cls = {}
     for i in range(len(classes)):
+        cls = {}
         cls["section"] = classes[i].section_id
         cls['dept'] = classes[i].department.dept_name
-        cls['course'] = f'{classes[i].course.course_name} ({classes[i].course.course_number}, ' \
-                        f'{classes[i].course.max_numb_students}'
+        cls['course'] = f'{classes[i].course.title} ({classes[i].course.code}, {classes[i].course.max_numb_students})'
         cls['room'] = f'{classes[i].room.r_number} ({classes[i].room.seating_capacity})'
-        cls['instructor'] = f'{classes[i].instructor.name} ({classes[i].instructor.uid})'
-        cls['meeting_time'] = [classes[i].meeting_time.pid, classes[i].meeting_time.day, classes[i].meeting_time.time]
+        cls['lecturer'] = f'{classes[i].lecturer.name} ({classes[i].lecturer.id})'
+        cls['lecture_time'] = [classes[i].lecture_time.id, classes[i].lecture_time.day, classes[i].lecture_time.time]
         context.append(cls)
     return context
 
-
+@login_required
 def timetable(request):
     schedule = []
-    population = Population(POPULATION_SIZE)
+    population = Population(POPULATION_SIZE, data)
     generation_num = 0
     population.get_schedules().sort(key=lambda x: x.get_fitness(), reverse=True)
     geneticAlgorithm = GeneticAlgorithm()
     while population.get_schedules()[0].get_fitness() != 1.0:
+        print('\n\n\n\nIn while loop')
         generation_num += 1
         print('\n> Generation #' + str(generation_num))
         population = geneticAlgorithm.evolve(population)
         population.get_schedules().sort(key=lambda x: x.get_fitness(), reverse=True)
-        schedule = population.get_schedules()[0].get_classes()
+        
+        best_schedule = population.get_schedules()[0]
+        schedule_classes = best_schedule.get_classes()
+        print('Best schedule fitness:', best_schedule.get_fitness())
+        print('Number of classes in schedule:', len(schedule_classes))
+        if not schedule_classes:
+            print('Empty schedule!')
+        else:
+            schedule = schedule_classes
+            
+            schedule.append(population.get_schedules()[0].get_classes())
 
-    return render(request, 'gentimetable.html', {'schedule': schedule, 'sections': Section.objects.all(),
-                                              'times': TimeSlotForm.objects.all()})
+    return render(request, 'ttgen/gentimetable.html', {'schedule': schedule, 'sections': Section.objects.all(),
+                                              'times': TimeSlot.objects.all()})
 
 
 #################################################################################
@@ -243,6 +253,8 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         context['lecturers'] = Lecturer.objects.all()
         # List of courses
         context['courses'] = Course.objects.all()
+        # List of Level
+        context['level'] = Level.objects.all()
         # List of departments
         context['departments'] = Department.objects.all()
         # List of lecture room
@@ -253,7 +265,6 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         context['sections'] = Section.objects.all()
 
         return context
-    
 
 
 ######################################################################################
@@ -285,7 +296,7 @@ def edit_course(request, pk):
             obj = form.save()
             messages.info(request, f'{obj.title} updated sucessfully')
             obj.save()
-            return redirect('ttgen:edit-course', pk=obj.pk)
+            return redirect('ttgen:dashboard', pk=obj.pk)
             
     context = {
         'course': course,
@@ -300,6 +311,61 @@ def delete_course(request, pk):
         crs.delete()
         messages.error(request, f'Course deleted')
         return redirect('ttgen:dashboard')
+    context = {
+        'crs': crs,
+    }
+    return render(request, 'ttgen/delete_course.html', context)
+ 
+
+
+######################################################################################
+# LEVEL FUNCTIONS
+
+@login_required
+def add_level(request):
+    form = LevelForm(request.POST or None)
+    if request.method == 'POST':
+        if form.is_valid():
+            obj = form.save()
+            messages.info(request, f'{obj.level} added sucessfully')
+            obj.save()
+            return redirect('ttgen:add-level')
+
+    context = {
+        'form': form
+    }
+    return render(request, 'ttgen/add_level.html', context)
+
+@login_required
+def edit_level(request, pk):
+    level = Level.objects.get(id=pk)
+    form = LevelForm(instance=level)
+    
+    if request.method == 'POST':
+        form = LevelForm(request.POST, instance=level)
+        if form.is_valid():
+            obj = form.save()
+            messages.info(request, f'{obj.level} updated sucessfully')
+            obj.save()
+            return redirect('ttgen:dashboard', pk=obj.pk)
+            
+    context = {
+        'level': level,
+        'form': form
+    }
+    return render(request, 'ttgen/edit_level.html', context)
+
+@login_required
+def delete_level(request, pk):
+    level = Level.objects.filter(pk=pk)
+    if request.method == 'POST':
+        level.delete()
+        messages.error(request, f'Level deleted')
+        return redirect('ttgen:dashboard')
+    context = {
+        'level': level,
+    }
+    return render(request, 'ttgen/delete_level.html', context)
 
 #################################################################################
 # LECTURER FUNCTIONS
@@ -329,7 +395,7 @@ def edit_lecturer(request, pk):
             obj = form.save()
             messages.info(request, f'{obj.name} updated sucessfully')
             obj.save()
-            return redirect('ttgen:edit-lecturer', pk=obj.pk)
+            return redirect('ttgen:dashboard', pk=obj.pk)
             
     context = {
         'lecturer': lecturer,
@@ -344,6 +410,10 @@ def delete_lecturer(request, pk):
         lecturer.delete()
         messages.error(request, f'Lecturer deleted')
         return redirect('ttgen:dashboard')
+    context = {
+        'lecturer': lecturer,
+    }
+    return render(request, 'ttgen/delete_lecturer.html', context)
 #################################################################################
 # LECTURE ROOM FUNCITONS
 
@@ -355,12 +425,12 @@ def add_lecture_room(request):
             obj = form.save()
             messages.info(request, f'{obj.r_number} added sucessfully')
             obj.save()
-            return redirect('ttgen:add-lectroom')
+            return redirect('ttgen:add-lectrooms')
 
     context = {
         'form': form
     }
-    return render(request, 'ttgen/add_lectRoom.html', context)
+    return render(request, 'ttgen/add_lectRooms.html', context)
 
 @login_required
 def edit_lecture_room(request, pk):
@@ -373,7 +443,7 @@ def edit_lecture_room(request, pk):
             obj = form.save()
             messages.info(request, f'{obj.r_number} updated sucessfully')
             obj.save()
-            return redirect('ttgen:edit-lectroom', pk=obj.pk)
+            return redirect('ttgen:dashboard', pk=obj.pk)
             
     context = {
         'room': room,
@@ -388,6 +458,10 @@ def delete_lecture_room(request, pk):
         room.delete()
         messages.error(request, f'Lecture Room deleted')
         return redirect('ttgen:dashboard')
+    context = {
+        'room': room,
+    }
+    return render(request, 'ttgen/delete_room.html', context)
 
 #################################################################################
 # LECTURE TIME FUNCTIONS
@@ -418,7 +492,7 @@ def edit_lecture_time(request, pk):
             obj = form.save()
             messages.info(request, f'{obj.time} updated sucessfully')
             obj.save()
-            return redirect('ttgen:edit-lecttime', pk=obj.pk)
+            return redirect('ttgen:dashboard', pk=obj.pk)
 
     context = {
         'time': time,
@@ -428,11 +502,15 @@ def edit_lecture_time(request, pk):
 
 @login_required
 def delete_lecture_time(request, pk):
-    mt = TimeSlot.objects.filter(pk=pk)
+    time = TimeSlot.objects.filter(pk=pk)
     if request.method == 'POST':
-        mt.delete()
+        time.delete()
         messages.error(request, f'Lecture Time deleted')
-        return redirect('ttgen:dashbpoard')
+        return redirect('ttgen:dashboard')
+    context = {
+        'time': time,
+    }
+    return render(request, 'ttgen/delete_time.html', context)
 
 #################################################################################
 # DEPARTMENTS FUNCTION
@@ -462,7 +540,7 @@ def edit_department(request, pk):
             obj = form.save()
             messages.info(request, f'{obj.dept_name} updated sucessfully')
             obj.save()
-            return redirect('ttgen:edit-dept', pk=obj.pk)
+            return redirect('ttgen:dashboard', pk=obj.pk)
             
     context = {
         'department': department,
@@ -477,7 +555,10 @@ def delete_department(request, pk):
         dept.delete()
         messages.error(request, f'Department deleted')
         return redirect('ttgen:dashboard')
-
+    context = {
+        'dept': dept,
+    }
+    return render(request, 'ttgen/delete_department.html', context)
 #################################################################################
 # SECTION FUNCTIONS
 
@@ -506,7 +587,7 @@ def edit_section(request, pk):
             obj = form.save()
             messages.info(request, f'Section updated sucessfully')
             obj.save()
-            return redirect('ttgen:edit-section', pk=obj.pk)
+            return redirect('ttgen:dashboard', pk=obj.pk)
             
     context = {
         'section': section,
@@ -516,11 +597,15 @@ def edit_section(request, pk):
 
 @login_required
 def delete_section(request, pk):
-    sec = Section.objects.filter(pk=pk)
+    section = Section.objects.filter(pk=pk)
     if request.method == 'POST':
-        sec.delete()
+        section.delete()
         messages.error(request, f'Section deleted')
         return redirect('ttgen:dashboard')
+    context = {
+        'section': section,
+    }
+    return render(request, 'ttgen/delete.html', context)
 
 #################################################################################
 

@@ -9,7 +9,10 @@
 {% endblock navigation %}
 
 {% block content %}
-        <h2>Add Section</h2>
+        <div class="d-flex">
+            <h2 class="me-5">Add Section</h2>
+            <a href="{% url 'ttgen:dashboard' %}" class='btn btn-primary'>Back</a>
+        </div>
         <h5>
             Please use the following form to enter the 
             Section into the system for timetable generation

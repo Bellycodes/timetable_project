@@ -1,45 +1,86 @@
 {% extends 'ttgen/base.html' %}
 {% load crispy_forms_tags %}
 
-{% block title %}Course List{% endblock title %}
+{% block title %}Generate Timetable{% endblock title %}
 
 {% comment %} Navigation {% endcomment %}
 {% block navigation %}
-    {% include 'ttgen/includes/_navbar.html' %}
+{% include 'ttgen/includes/_navbar.html' %}
 {% endblock navigation %}
 
 {% block content %}
-    <div class="d-flex mb-3 justify-content-between">
-        <h3 class=''>List of Courses</h3>
-        <a href="{% url 'ttgen:add-courses'%}">Back to Add Courses <i class="fas fa-add"></a>
-    </div>
-    {% for section in sections %}
-        <h2 class="">{{ section.section_id }} ({{ section.department }})</h2>
-        <div class="table-responsive text-center">
-            <table class="table table-hover table-bordered table-sm align-middle">
-                <thead class='table-dark'>
-                    <th scope='col'>Class</th>
-                    <th scope='col'>Course</th>
-                    <th scope='col'>Lecture Room</th>
-                    <th scope='col'>Lecturer</th>
-                    <th scope='col'>Time</th>
-                </thead>
-                <tbody>
-                    {% for class in schedule %}
-                    {% if class.section == section.id %}{% endif %}
-                        <tr>
-                            <th scope='row'>{{class.section_id}}</th>
-                            <td>{{class.course}}</td>
-                            <td>{{class.room}}</td>
-                            <td>{{class.instructor}}</td>
-                            <td>{{class.meeting_time}}</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    {% endfor %}
-    <button class="submit" id="download">Download</button>
+<main role="main">
 
-    {% include 'ttgen/includes/_pagination.html' with page=page_obj %}
+    <div class="jumbotron">
+        <div class="container">
+            <h1 class="display-4">TTGS | Generate Timetable</h1>
+            <p>Please make sure you have entered the correct information for the Lecturer, Lecture Rooms, Lecture TIme, Courses,
+                Sections and Departments
+                into the system. If you have not entered all the information yet please refer below on how to go about
+                feeding all the information into the system.
+                Once confirmed please click on the "Generate Timetable" button below and wait patiently as TTGS
+                generates your timetable for you.</p>
+            <p><a href="{% url 'ttgen:timetable' %}" class="btn btn-primary btn-lg">Generate Timetable&raquo;</a>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <h2>1. Add Lecturers</h2>
+                <p>Navigate to the "Add Lecturer" section and add the corresponding details. Incorrect Details can also
+                    be removed via the "Edit Lecturer" option.</p>
+
+            </div>
+            <div class="col-md-4">
+                <h2>2. Add  Lecturer Rooms</h2>
+                <p>Navigate to the "Add Lecture Rooms" section and add the corresponding details. Incorrect Details can also be
+                    removed via the "Edit Lecture Rooms" option.</p>
+
+            </div>
+            <div class="col-md-4">
+                <h2>3. Add Lecture Time</h2>
+                <p>Navigate to the "Add Lecture Time" section and add the corresponding details. Incorrect Details can also
+                    be removed via the "Edit Lecture Time" option.</p>
+
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-md-4">
+                <h2>4. Add Courses</h2>
+                <p>Navigate to the "Add Courses" section and add the corresponding details. Incorrect Details can also
+                    be removed via the "Edit Courses" option.</p>
+
+            </div>
+            <div class="col-md-4">
+                <h2>5. Add Departments</h2>
+                <p>Navigate to the "Add Departments" section and add the corresponding details. Incorrect Details can
+                    also be removed via the "Edit Departments" option.</p>
+
+            </div>
+            <div class="col-md-4">
+                <h2>6. Add Sections</h2>
+                <p>Navigate to the "Add Sections" section and add the corresponding details. Incorrect Details can also
+                    be removed via the "Edit Sections" option.</p>
+
+            </div>
+        </div>
+
+        <br>
+
+        <div class="row">
+            <div class="col-md-4">
+                <h2>7. Generate Timetable</h2>
+                <p>Navigate to the "Generate Timetable" Section and click on Generate Timetable and wait patiently as
+                    our algorithm works its magic.</p>
+            </div>
+
+        </div>
+    </div>
+
+    <hr>
+
+    </div>
+
+</main>
 {% endblock content %}

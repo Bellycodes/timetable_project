@@ -14,7 +14,7 @@ class LectureRoomForm(forms.ModelForm):
             Row(
                 Column('seating_capacity', css_class='form-group col-md-6 mb-0'),
             ),
-            Submit('submit', 'Add')
+            Submit('submit', 'Save')
         )
     class Meta:
         model = LectureRoom
@@ -34,21 +34,16 @@ class LecturerForm(forms.ModelForm):
         self.helper = FormHelper()
         self.helper.layout = Layout(
             Row(
-                Column('uid', css_class='form-group col-md-6 mb-0'),
-            ),
-            Row(
                 Column('name', css_class='form-group col-md-6 mb-0'),
             ),
-            Submit('submit', 'Add')
+            Submit('submit', 'Save')
         )
     class Meta:
         model = Lecturer
         labels = {
-            "uid": "Lecturer UID",
             "name": "Full Name"
         }
         fields = [
-            'uid',
             'name',
         ]
 
@@ -59,25 +54,20 @@ class TimeSlotForm(forms.ModelForm):
         self.helper = FormHelper()
         self.helper.layout = Layout(
             Row(
-                Column('pid', css_class='form-group col-md-6 mb-0'),
-            ),
-            Row(
                 Column('time', css_class='form-group col-md-6 mb-0'),
             ),
             Row(
                 Column('day', css_class='form-group col-md-6 mb-0'),
             ),
-            Submit('submit', 'Add')
+            Submit('submit', 'Save')
         )
     class Meta:
         model = TimeSlot
         fields = [
-            'pid',
             'time',
             'day'
         ]
         labels = {
-            "pid": "Time ID",
             "time": "Time",
             "day": "Day of the Week"
         }
@@ -100,7 +90,7 @@ class CourseForm(forms.ModelForm):
             Row(
                 Column('lecturer', css_class='form-group col-md-6 mb-0'),
             ),
-            Submit('submit', 'Add')
+            Submit('submit', 'Save')
         )  
     class Meta:
         model = Course
@@ -110,6 +100,24 @@ class CourseForm(forms.ModelForm):
             "title": "Course Title",
             "max_numb_students": "Course Capacity",
             "lecturer": "Course Lecturer"
+        }
+
+
+class LevelForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Row(
+                Column('level', css_class='form-group col-md-6 mb-0'),
+            ),
+            Submit('submit', 'Save')
+        )  
+    class Meta:
+        model = Level
+        fields = ['level',]
+        labels = {
+            "level": "Level",
         }
 
 
@@ -127,7 +135,7 @@ class DepartmentForm(forms.ModelForm):
             Row(
                 Column('courses', css_class='form-group col-md-6 mb-0'),
             ),
-            Submit('submit', 'Add')
+            Submit('submit', 'Save')
         ) 
     class Meta:
         model = Department
@@ -145,21 +153,17 @@ class SectionForm(forms.ModelForm):
         self.helper = FormHelper()
         self.helper.layout = Layout(
             Row(
-                Column('section_id', css_class='form-group col-md-6 mb-0'),
-            ),
-            Row(
                 Column('department', css_class='form-group col-md-6 mb-0'),
             ),
             Row(
                 Column('num_class_in_week', css_class='form-group col-md-6 mb-0'),
             ),
-            Submit('submit', 'Add')
+            Submit('submit', 'Save')
         ) 
     class Meta:
         model = Section
-        fields = ['section_id', 'department', 'num_class_in_week']
+        fields = ['department', 'num_class_in_week']
         labels = {
-            "section_id": "Section ID",
             "department": "Corresponding Department",
             "num_class_in_week": "Classes Per Week"
         }

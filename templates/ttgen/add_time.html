@@ -8,7 +8,10 @@
     {% include 'ttgen/includes/_navbar.html' %}
 {% endblock navigation %}
 {% block content %}
-        <h2>Add Tme</h2>
+        <div class="d-flex">
+            <h2 class="me-5">Add Lecture Time</h2>
+            <a href="{% url 'ttgen:dashboard' %}" class='btn btn-primary'>Back</a>
+        </div>
         <h5>
             Please use the following form to enter the 
             Time into the system for timetable generation
